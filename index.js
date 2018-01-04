@@ -1,32 +1,22 @@
-const PORT = process.env.PORT || 5000
-const bodyParser = require('body-parser');
 const express = require('express');
+const bodyParser = require('body-parser');
 const fs = require('fs');
 
 let app = express();
+app.set('port', (process.env.PORT || 5000));
 
-app.get('/getTime', (req, res) => {
-    res.send(new Date);
-});
+app.use(bodyParser.json());
 
 app.get('/getFile/:filename',(req, res) => {
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    let filename = req.params.filename || "test.txt";
-    // fs.readFile(filename,(err, content) => {
-    //     if (err) {
-    //         console.error(err);
-    //         return;
-    //     }
-    //     res.write(content);
-    //     res.end();
-    // });
-    // let fileToRead = req.params.filename || "showMyName.txt";
-    const src = fs.createReadStream(filename);
+    let fileToRead = req.params.filename || "showMyName.txt";
+    const src = fs.createReadStream(fileToRead);
     src.on('error', handler);
     src.pipe(res);
 });
-app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}!`);
+
+app.listen(app.get('port'), () => {
+    console.log(`Listening on port ${app.get('port')}!`);
 });
 
-const handler = err => console.error(err);
+// error-handling function (written as arrow function)
+const handler = err => console.log(err);
